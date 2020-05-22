@@ -11,6 +11,10 @@ import java.time.ZonedDateTime;
 
 import static org.junit.Assert.assertEquals;
 
+//came with exception:
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;   //add junit to classpath (and i did it btw)
+
 public class CourseTest {
     ZonedDateTime startDate = ZonedDateTime.parse("2020-01-01T00:00:00.000+00:00[UTC]");
     ZonedDateTime endDate = ZonedDateTime.parse("2020-01-20T00:00:00.000+00:00[UTC]");
@@ -70,9 +74,19 @@ public class CourseTest {
         assertEquals(expected_results, result);
     }
 
-    //throw exception?
-    /*@Test
-    public void viskab_exceptioni() throws Exception{
-        assertEquals(course.getLength());
-    }*/
+    @Test
+    public void getWorkingDaysWrongOrderThrowsIllegalArgumentException() { //tuli "wtf" instead of "nii ei saa" :(
+        //given
+        endDate = ZonedDateTime.parse("2020-01-01T00:00:00.000+00:00[UTC]");
+        startDate = ZonedDateTime.parse("2020-02-01T00:00:00.000+00:00[UTC]");
+        when(publicHolidayService.getPublicHolidaysOnWorkdays(startDate, endDate)).thenReturn(1);
+        Course course = new Course("Astronoomiline teleportatsioon", 10, startDate, endDate, teacher);
+        String expected_result = "nii ei saa";
+
+        //when
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> course.getLength());
+
+        //then
+        assertEquals(expected_result,exception.getMessage());
+    }
 }
